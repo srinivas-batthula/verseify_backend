@@ -1,0 +1,57 @@
+const express = require('express');
+const passport = require('passport')
+const cookieParser = require('cookie-parser')
+const rateLimit = require('express-rate-limit')
+const cors = require('cors')
+const helmet = require('helmet')
+const MainRouter = require('./routes/MainRouter')
+const errorHandler = require('./utils/errorHandler')
+
+
+
+const app = express();
+
+app.use(express.json())
+
+app.use(cookieParser())
+
+app.use(express.static('public'));
+
+const corsOptions = {
+    origin: ['https://srinivas-batthula.github.io', 'http://localhost:3000'], // Allow frontend domain
+    credentials: true,               // Allow credentials (cookies)
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    maxAge: 600,
+}
+app.use('/', cors(corsOptions))
+
+app.options('/', cors(corsOptions))
+
+const limiter = rateLimit({
+    windowMs: 2 * 60 * 1000, // 2 minutes
+    max: 26, // limit each IP to 26 requests per windowMs
+    message: 'Too many requests from this IP, please try again after 2 minutes',
+    headers: true,
+})
+app.use(limiter)
+
+app.use(helmet())
+
+app.use(passport.initialize())      //Initialize OAuth2.0
+
+app.get('/', (req, res)=>{
+    return res.json({'status':'success', 'details':`You are Viewing a Non-API Route (${req.url}), Use '/api/' for all other endpoints to access them`})
+})
+
+// API Starter...
+app.use('/api', MainRouter)
+
+app.use((req, res)=>{
+    return res.status(404).json({'status':'Not Found', 'details':`Requested path/method {${req.url} & ${req.method}} Not Found`})
+})
+
+app.use(errorHandler)
+
+
+module.exports = app;
