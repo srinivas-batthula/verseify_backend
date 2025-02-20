@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const userModel = require('../models/User')
 require('dotenv').config({ path: './config.env' })
-const {email} = require('../services/email')
+const Email = require('../services/email')
 
 
 const JWT_SECRET = process.env.JWT_SECRET + ''
@@ -48,7 +48,7 @@ const Authorization_Middleware = async (req, res, next) => {
     }
 }
 
-const forgotPassword = async(req, res, next)=>{
+const forgotPasswordEmail = async(req, res, next)=>{
     // const home_url = req.query.home_url||'http://localhost:3000/'
     const { email } = req.body
 
@@ -80,26 +80,65 @@ const forgotPassword = async(req, res, next)=>{
                 <br>
                 <h4>click below link & Follow the instructions to reset your forgotten password.</h4>
                 <br>
-                <a href="http://localhost:8080/api/auth/reset-password?q="+${token}>Click Here</a>
+                <a href="http://localhost:8080/api/auth/forgot-password/"+${token}>Click Here</a>
                 <br>
                 <p>OR</p>
-                <div>http://localhost:8080/api/auth/reset-password?q=${token}</div>
+                <div>http://localhost:8080/api/auth/forgot-password/${token}</div>
                 <br><br>
                 <p>~Thanks  from feedback team.</p>
                 <p>~Verseify</p>
                 </body></html>`
     }
     try {               //Sending Email with Token...
-        const r = await email(body)
+        const r = await Email.email(body)
         if(r.success){
             return res.status(201).json({'success': true, 'details':'Email sent with Verification Code.'})
         }
     }
     catch (err) {
         // console.log(err)
-        return res.status(500).json({'success': false, 'details':'Unable to send email!'})
+        return res.status(501).json({'success': false, 'details':'Unable to send email!'})
     }
     return res.status(500).json({'success': false, 'details':'Unable to send email!'})
+}
+
+const forgotPassword = async (req, res)=>{
+    const token = req.params.token
+    const {newPassword} = req.body
+
+    // console.log(token, newPassword)
+
+    if(token && newPassword){
+        try{
+            const decoded = await jwt.verify(token, JWT_SECRET)
+
+            const r = await userModel.findOne({email: decoded.email})
+            if(r){
+                if(r.otp === decoded.otp){
+                    const resp = await userModel.findByIdAndUpdate(r._id, {password: newPassword, otp: ""})
+                    if(resp){
+                        // return res.status(200).json({success: true, details: 'Password Updated Successfully!'})
+                        return res.status(200).redirect('/login')
+                    }
+                    else{
+                        return res.status(500).json({success: false, details: 'Something went Wrong!'})
+                    }
+                }
+                else{
+                    return res.status(423).json({success: false, details: 'OTP Not Matched!'})
+                }
+            }
+            else{
+                return res.status(500).json({success: false, details: 'Something went Wrong!'})
+            }
+        }
+        catch(err){
+            return res.status(500).json({success: false, details: 'Something went Wrong!', err})
+        }
+    }
+    else{
+        return res.status(423).json({success: false, details: 'Invalid Credentials!'})
+    }
 }
 
 const resetPassword = async (req, res)=>{
@@ -269,4 +308,4 @@ const signOut = async (req, res) => {
 }
 
 
-module.exports = { signUp, signIn, signOut, Authorization_Middleware, forgotPassword, resetPassword }
+module.exports = { signUp, signIn, signOut, Authorization_Middleware, forgotPassword, forgotPasswordEmail, resetPassword }

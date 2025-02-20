@@ -4,12 +4,18 @@ const cookieParser = require('cookie-parser')
 const rateLimit = require('express-rate-limit')
 const cors = require('cors')
 const helmet = require('helmet')
+const path = require("path")
 const MainRouter = require('./routes/MainRouter')
 const errorHandler = require('./utils/errorHandler')
 
 
 
 const app = express();
+
+app.set("view engine", "pug")
+app.set("views", path.join(__dirname, "views"))
+
+app.use(express.urlencoded({ extended: true }))
 
 app.use(express.json())
 
@@ -40,15 +46,15 @@ app.use(helmet())
 
 app.use(passport.initialize())      //Initialize OAuth2.0
 
-app.get('/', (req, res)=>{
-    return res.json({'status':'success', 'details':`You are Viewing a Non-API Route (${req.url}), Use '/api/' for all other endpoints to access them`})
+app.get('/', (req, res) => {
+    return res.json({ 'status': 'success', 'details': `You are Viewing a Non-API Route (${req.url}), Use '/api/' for all other endpoints to access them` })
 })
 
 // API Starter...
 app.use('/api', MainRouter)
 
-app.use((req, res)=>{
-    return res.status(404).json({'status':'Not Found', 'details':`Requested path/method {${req.url} & ${req.method}} Not Found`})
+app.use((req, res) => {
+    return res.status(404).json({ 'status': 'Not Found', 'details': `Requested path/method {${req.url} & ${req.method}} Not Found` })
 })
 
 app.use(errorHandler)

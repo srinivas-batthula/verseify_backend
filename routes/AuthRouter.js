@@ -1,9 +1,16 @@
 const router = require("express").Router();
 require("dotenv").config({ path: "../config.env" });
-const passport = require("passport");
+const jwt = require('jsonwebtoken')
+const passport = require("passport")
+const crypto = require("crypto")
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const AuthController = require("../controllers/AuthController");
 const userModel = require('../models/User')
+
+
+
+const JWT_SECRET = process.env.JWT_SECRET + ''
+const MODE = process.env.MODE + ''
 
 
 router.post("/signUp", AuthController.signUp);
@@ -14,8 +21,22 @@ router.get("/googleAuth", (req, res) => {
     return res.redirect("/api/auth/google")
 });
 
-router.post("/forgot-password", AuthController.forgotPassword);
-router.use("/reset-password", AuthController.resetPassword);
+router.post("/forgot-password-email", AuthController.forgotPasswordEmail);
+router.post("/forgot-password/:token", AuthController.forgotPassword);
+router.get("/forgot-password/:token", async(req, res)=>{
+    const nonce = crypto.randomBytes(16).toString("base64");
+    res.setHeader("Content-Security-Policy", `script-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net`);
+
+    const token = req.params.token
+    try {
+        await jwt.verify(token, JWT_SECRET)
+        return res.status(200).render('reset', {token, nonce})
+    }
+    catch(error) {
+        return res.status(401).render('reset', {message: 'Invalid Token / Something went Wrong!'})
+    }
+});
+router.use("/reset-password/:id", AuthController.resetPassword);
 
 //For OAuth2.0, add this line 'app.use(passport.initialize())' in 'app.js' to Initialize OAuth...
 //To use OAuth, Redirect directly from Frontend as "window.href = '__backend-OAuth-url__'", As backend handles whole OAuth...
