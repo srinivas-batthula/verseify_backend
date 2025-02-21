@@ -35,7 +35,7 @@ const Authorization_Middleware = async (req, res, next) => {
                 // 'email': user.email,
                 // 'subscription': user.subscription || false
             };
-            console.log("Authorized")       //Passing to next middleware (endPoint).
+            // console.log("Authorized")       //Passing to next middleware (endPoint).
             next()
         }
         else {
@@ -62,8 +62,10 @@ const forgotPasswordEmail = async(req, res, next)=>{
         otp
     }
     const token = jwt.sign(payload, JWT_SECRET, {expiresIn:'5m'})
+    let name=''
     try{
         const r = await userModel.findOneAndUpdate({email}, {otp})
+        name = r.username
     }
     catch(err){
         // console.log(err)
@@ -74,19 +76,14 @@ const forgotPasswordEmail = async(req, res, next)=>{
         email,
         subject:'Forgot Password request!',
         htmlText:`<html><body>
-                <h1>Hello User,,</h1>
+                <h1>Hello ${name || 'user'},,</h1>
+                <h2>Your Password Reset request has been approved!</h2>
+                <h3>click below link & Follow the instructions to reset your forgotten password.</h3>
                 <br>
-                <h5>Your Password Reset request has been approved!</h5>
+                <a href="http://localhost:8080/api/auth/forgot-password/${token}" styel="width:150px; height:90px; font-size:30px;">Click Here</a>
                 <br>
-                <h4>click below link & Follow the instructions to reset your forgotten password.</h4>
-                <br>
-                <a href="http://localhost:8080/api/auth/forgot-password/"+${token}>Click Here</a>
-                <br>
-                <p>OR</p>
-                <div>http://localhost:8080/api/auth/forgot-password/${token}</div>
-                <br><br>
-                <p>~Thanks  from feedback team.</p>
-                <p>~Verseify</p>
+                <h3>~Thanks  from feedback team.</h3>
+                <h3 style="color: skyblue;">~Verseify</h3>
                 </body></html>`
     }
     try {               //Sending Email with Token...
@@ -115,10 +112,11 @@ const forgotPassword = async (req, res)=>{
             const r = await userModel.findOne({email: decoded.email})
             if(r){
                 if(r.otp === decoded.otp){
-                    const resp = await userModel.findByIdAndUpdate(r._id, {password: newPassword, otp: ""})
-                    if(resp){
-                        // return res.status(200).json({success: true, details: 'Password Updated Successfully!'})
-                        return res.status(200).redirect('/login')
+                    r.password = newPassword
+                    r.otp = undefined
+                    const resp = await r.save()
+                    if(resp){       //final
+                        return res.status(200).json({success: true, details: 'Password Updated Successfully!'})
                     }
                     else{
                         return res.status(500).json({success: false, details: 'Something went Wrong!'})
@@ -142,49 +140,27 @@ const forgotPassword = async (req, res)=>{
 }
 
 const resetPassword = async (req, res)=>{
-    const token1 = req.query.q||''
-    const body = req.body
+    const id = req.params.id
+    const {newPassword, oldPassword} = req.body
 
-    if(token1===''){            //Check Old-Password & update a New one...
-        if(body.user_id==='' || body.oldPassword==='' || body.newPassword===''){
-            return res.status(400).json({'success': false, 'details':'Invalid inputs!'})
-        }
+    if(newPassword && oldPassword){            //Check Old-Password & update a New one...
         try {
-            const r = await userModel.findById(body.user_id)
-            if(!r || !r.comparePassword(body.oldPassword)){
+            const r = await userModel.findById(id)
+            if(!r || !r.comparePassword(oldPassword)){
                 return res.status(403).json({'success': false, 'details':'Password Not matched!'})
             }
 
-            await userModel.findByIdAndUpdate(body.user_id, {password: body.newPassword})      //final...
-            return  res.status(201).json({'success': true, 'details':'Password Changed.'})
+            r.password = newPassword
+            await r.save()
+            return  res.status(200).json({'success': true, 'details':'Password Changed.'})
         }
         catch(err) {
-            console.log(err)
-            return res.status(500).json({'success': false, 'details':'Unable to modify Password!'})
+            // console.log(err)
+            return res.status(500).json({'success': false, 'details':'Unable to modify Password!', err})
         }
     }
-    else{                       //Resetting a Forgotten Password...
-        if(body.newPassword===''){
-            return res.status(400).json({'success': false, 'details':'Invalid inputs!'})
-        }
-        try {
-            const token = jwt.verify(token1, JWT_SECRET)
-            // console.log(token)
-            if(!token){
-                return res.status(403).json({'success': false, 'details':'Invalid Token!'})
-            }
-            const r = await userModel.findOne({email: token.email}, {otp: 1}).lean()
-            
-            if(r.otp===token.otp){                     //final...
-                await userModel.findByIdAndUpdate(r._id, {password: body.newPassword, otp: null})
-                return  res.status(201).json({'success': true, 'details':'Password Changed.'})
-            }
-            return res.status(403).json({'success': false, 'details':'Invalid OTP!'})
-        }
-        catch(err) {
-            console.log(err)
-            return res.status(500).json({'success': false, 'details':'Unable to modify Password!'})
-        }
+    else{
+        return res.status(400).json({'success': false, 'details':'Invalid inputs!'})
     }
 }
 

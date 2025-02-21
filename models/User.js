@@ -76,6 +76,7 @@ userSchema.pre('save', async function (next) {
     try {
         const saltRounds = 13
         this.password = await bcrypt.hash(this.password, saltRounds)
+        this.passwordModifiedAt = new Date()
         next()
     }
     catch (error) {

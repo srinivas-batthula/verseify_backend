@@ -40,16 +40,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     text: "✅ Password updated successfully!",
                     duration: 3000,
                     gravity: "top",
-                    backgroundColor: "#4caf50",
+                    style:{
+                        background: "#4caf50"
+                    },
                 }).showToast();
 
-                setTimeout(() => window.location.href = "/", 3000);
+                setTimeout(() => window.location.href = "/login", 1800);     //Routed to /login page (frontend)
             } else {
                 Toastify({
                     text: `❌ ${result.details || 'Failed to update password.'}`,
                     duration: 3000,
                     gravity: "top",
-                    backgroundColor: "#f44336",
+                    style:{
+                        background: "#f44336"
+                    },
                 }).showToast();
             }
         } catch (error) {
@@ -57,7 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 text: "❌ Something went wrong. Please try again!",
                 duration: 3000,
                 gravity: "top",
-                backgroundColor: "#f44336",
+                style:{
+                    background: "#f44336"
+                },
             }).showToast();
         }
     });

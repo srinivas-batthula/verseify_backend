@@ -33,10 +33,10 @@ router.get("/forgot-password/:token", async(req, res)=>{
         return res.status(200).render('reset', {token, nonce})
     }
     catch(error) {
-        return res.status(401).render('reset', {message: 'Invalid Token / Something went Wrong!'})
+        return res.status(401).render('reset', {message: 'Invalid Token / Something went Wrong!', nonce})
     }
 });
-router.use("/reset-password/:id", AuthController.resetPassword);
+router.post("/reset-password/:id", AuthController.Authorization_Middleware, AuthController.resetPassword);
 
 //For OAuth2.0, add this line 'app.use(passport.initialize())' in 'app.js' to Initialize OAuth...
 //To use OAuth, Redirect directly from Frontend as "window.href = '__backend-OAuth-url__'", As backend handles whole OAuth...
