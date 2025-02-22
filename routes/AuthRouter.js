@@ -22,7 +22,7 @@ router.get("/googleAuth", (req, res) => {
 });
 
 router.post("/forgot-password-email", AuthController.forgotPasswordEmail);
-router.post("/forgot-password/:token", AuthController.forgotPassword);
+router.post("/forgot-password/:tokenId", AuthController.forgotPassword);
 router.get("/forgot-password/:token", async(req, res)=>{
     const nonce = crypto.randomBytes(16).toString("base64");
     res.setHeader("Content-Security-Policy", `script-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net`);
@@ -30,13 +30,25 @@ router.get("/forgot-password/:token", async(req, res)=>{
     const token = req.params.token
     try {
         await jwt.verify(token, JWT_SECRET)
-        return res.status(200).render('reset', {token, nonce})
+        return res.status(200).render('reset', {token, nonce, check: true})
     }
     catch(error) {
         return res.status(401).render('reset', {message: 'Invalid Token / Something went Wrong!', nonce})
     }
 });
-router.post("/reset-password/:id", AuthController.Authorization_Middleware, AuthController.resetPassword);
+
+router.get("/reset-password/:id", AuthController.Authorization_Middleware, async(req, res)=>{
+    const nonce = crypto.randomBytes(16).toString("base64");
+    res.setHeader("Content-Security-Policy", `script-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net`);
+
+    const id = req.params.id
+    try {
+        return res.status(200).render('reset', {id, nonce, check: false})
+    }
+    catch(error) {
+        return res.status(401).render('reset', {message: 'Invalid Id / Something went Wrong!', nonce})
+    }
+});
 
 //For OAuth2.0, add this line 'app.use(passport.initialize())' in 'app.js' to Initialize OAuth...
 //To use OAuth, Redirect directly from Frontend as "window.href = '__backend-OAuth-url__'", As backend handles whole OAuth...

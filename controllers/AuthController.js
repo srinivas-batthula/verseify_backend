@@ -100,67 +100,73 @@ const forgotPasswordEmail = async(req, res, next)=>{
 }
 
 const forgotPassword = async (req, res)=>{
-    const token = req.params.token
-    const {newPassword} = req.body
+    const token = req.params.tokenId
+    const id = token
+    const {check} = req.body
 
-    // console.log(token, newPassword)
-
-    if(token && newPassword){
-        try{
-            const decoded = await jwt.verify(token, JWT_SECRET)
-
-            const r = await userModel.findOne({email: decoded.email})
-            if(r){
-                if(r.otp === decoded.otp){
-                    r.password = newPassword
-                    r.otp = undefined
-                    const resp = await r.save()
-                    if(resp){       //final
-                        return res.status(200).json({success: true, details: 'Password Updated Successfully!'})
+    //Forgot Password
+    if(check==='true'){
+        const {newPassword} = req.body
+    
+        // console.log(token, newPassword)
+    
+        if(token && newPassword){
+            try{
+                const decoded = await jwt.verify(token, JWT_SECRET)
+            
+                const r = await userModel.findOne({email: decoded.email})
+                if(r){
+                    if(r.otp === decoded.otp){
+                        r.password = newPassword
+                        r.otp = undefined
+                        const resp = await r.save()
+                        if(resp){       //final
+                            return res.status(200).json({success: true, details: 'Password Updated Successfully!'})
+                        }
+                        else{
+                            return res.status(500).json({success: false, details: 'Something went Wrong!'})
+                        }
                     }
                     else{
-                        return res.status(500).json({success: false, details: 'Something went Wrong!'})
+                        return res.status(423).json({success: false, details: 'OTP Not Matched!'})
                     }
                 }
                 else{
-                    return res.status(423).json({success: false, details: 'OTP Not Matched!'})
+                    return res.status(500).json({success: false, details: 'Something went Wrong!'})
                 }
             }
-            else{
-                return res.status(500).json({success: false, details: 'Something went Wrong!'})
+            catch(err){
+                return res.status(500).json({success: false, details: 'Something went Wrong!', err})
             }
         }
-        catch(err){
-            return res.status(500).json({success: false, details: 'Something went Wrong!', err})
+        else{
+            return res.status(423).json({success: false, details: 'Invalid Credentials!'})
         }
     }
+
+    //Reset Password
     else{
-        return res.status(423).json({success: false, details: 'Invalid Credentials!'})
-    }
-}
+        const {newPassword, oldPassword} = req.body
 
-const resetPassword = async (req, res)=>{
-    const id = req.params.id
-    const {newPassword, oldPassword} = req.body
+        if(newPassword && oldPassword){            //Check Old-Password & update a New one...
+            try {
+                const r = await userModel.findById(id)
+                if(!(await r.comparePassword(oldPassword))){
+                    return res.status(403).json({'success': false, 'details':'Old Password Not matched!'})
+                }
 
-    if(newPassword && oldPassword){            //Check Old-Password & update a New one...
-        try {
-            const r = await userModel.findById(id)
-            if(!r || !r.comparePassword(oldPassword)){
-                return res.status(403).json({'success': false, 'details':'Password Not matched!'})
+                r.password = newPassword
+                await r.save()
+                return  res.status(200).json({'success': true, 'details':'Password Changed.'})
             }
-
-            r.password = newPassword
-            await r.save()
-            return  res.status(200).json({'success': true, 'details':'Password Changed.'})
+            catch(err) {
+                // console.log(err)
+                return res.status(500).json({'success': false, 'details':'Unable to modify Password!', err})
+            }
         }
-        catch(err) {
-            // console.log(err)
-            return res.status(500).json({'success': false, 'details':'Unable to modify Password!', err})
+        else{
+            return res.status(400).json({'success': false, 'details':'Invalid inputs!'})
         }
-    }
-    else{
-        return res.status(400).json({'success': false, 'details':'Invalid inputs!'})
     }
 }
 
@@ -284,4 +290,5 @@ const signOut = async (req, res) => {
 }
 
 
-module.exports = { signUp, signIn, signOut, Authorization_Middleware, forgotPassword, forgotPasswordEmail, resetPassword }
+
+module.exports = { signUp, signIn, signOut, Authorization_Middleware, forgotPassword, forgotPasswordEmail }

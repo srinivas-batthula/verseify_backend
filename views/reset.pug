@@ -158,6 +158,13 @@ html
 
             if !message
                 form(id="resetForm")
+                    input(value=`${check}` type="text" id="check" name="check" hidden)
+
+                    if !check
+                        .form-group
+                            label(for="oldPassword") Old Password
+                            input(type="password" id="oldPassword" name="oldPassword" placeholder="Enter old password" required)
+
                     .form-group
                         label(for="newPassword") New Password
                         input(type="password" id="newPassword" name="newPassword" placeholder="Enter new password" required)
