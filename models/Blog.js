@@ -33,7 +33,7 @@ const blogSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-const BlogModel = mongoose.model('verseify_blogs', blogSchema)
+const blogModel = mongoose.model('verseify_blogs', blogSchema)
 
 
-module.exports = BlogModel
+module.exports = blogModel

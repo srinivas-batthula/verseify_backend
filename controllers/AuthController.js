@@ -2,13 +2,13 @@ const jwt = require('jsonwebtoken')
 const userModel = require('../models/User')
 require('dotenv').config({ path: './config.env' })
 const Email = require('../services/email')
+const { redisPost, redisGet } = require('../services/redisDb')
 
 
 const JWT_SECRET = process.env.JWT_SECRET + ''
 const MODE = process.env.MODE + ''
 
-// Using this Authorization_Middleware in routes...
-// router.get('/dashboard', Authorization_Middleware(['admin']), dashboard)
+// Using this Authorization_Middleware in protected routes...
 
 const Authorization_Middleware = async (req, res, next) => {
     const token = req.cookies.jwt || req.headers.Authorization || ''
@@ -20,10 +20,21 @@ const Authorization_Middleware = async (req, res, next) => {
     try {
         const decode = await jwt.verify(token, JWT_SECRET)       //Verifying JWT Token...
         if (decode) {
-            const user = await userModel.findById(decode.user_id).select('-password').lean()      //Checking if user existed in DB...
-            if (!user) {
-                return res.status(408).json({ 'success': false, 'Auth': false, 'details': "User Not Found in our DB!" })
-            }
+            let user =  {}
+
+            // r = await redisGet(decode.user_id)                 //Search for user in REDIS DB...
+            // if(r.success === false) {
+                user = await userModel.findById(decode.user_id).select('-password').lean()      //Checking if user existed in DB...
+                if (!user) {
+                    return res.status(408).json({ 'success': false, 'Auth': false, 'details': "User Not Found in our DB!" })
+                }
+
+                // await redisPost(decode.user_id, decode.passwordModifiedAt)                  //Adding new values to REDIS DB...
+            // }
+            // else {
+            //     console.log("Redis authorisation...")
+            //     user = r.user
+            // }
             
             if (new Date(decode.validFor).getTime() !== new Date(user.passwordModifiedAt).getTime()) {
                 return res.status(423).json({ 'success': false, 'Auth': false, 'details': "Details Not Matched! Please Login again." });
@@ -120,6 +131,10 @@ const forgotPassword = async (req, res)=>{
                         r.password = newPassword
                         r.otp = undefined
                         const resp = await r.save()
+
+                        // const re = await userModel.findById(r._id)
+                        // const resp2 = await redisPost(re._id, re.passwordModifiedAt)
+
                         if(resp){       //final
                             return res.status(200).json({success: true, details: 'Password Updated Successfully!'})
                         }
@@ -156,8 +171,17 @@ const forgotPassword = async (req, res)=>{
                 }
 
                 r.password = newPassword
-                await r.save()
-                return  res.status(200).json({'success': true, 'details':'Password Changed.'})
+                const resp = await r.save()
+
+                // const re = await userModel.findById(r._id)
+                // const resp2 = await redisPost(re._id, re.passwordModifiedAt)
+
+                if(resp) {
+                    return  res.status(200).json({'success': true, 'details':'Password Changed.'})
+                }
+                else{
+                    return res.status(500).json({success: false, details: 'Something went Wrong!'})
+                }
             }
             catch(err) {
                 // console.log(err)
@@ -209,7 +233,12 @@ const signUp = async (req, res) => {
             if (!token) {
                 return res.status(501).json({ 'success': false, 'details': 'Token Creation Failed!' })
             }
-            try{
+            try{                                                   //final...
+                // const resp2 = await redisPost(token_body.user_id, token_body.validFor)
+                // if(resp2.success === false) { 
+                //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
+                // }
+
                 res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production') || true, sameSite: 'None', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
                 return res.status(201).json({ 'success': true, 'details': 'New User created successfully!' })
             }
@@ -260,7 +289,12 @@ const signIn = async (req, res) => {
             if (!token) {
                 return res.status(501).json({ 'success': false, 'details': 'Token Creation Failed!' })
             }
-            try{
+            try{                                            //final...
+                // const resp2 = await redisPost(token_body.user_id, token_body.validFor)
+                // if(resp2.success === false) { 
+                //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
+                // }
+
                 res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production') || true, sameSite: 'None', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
                 return res.status(201).json({ 'success': true, 'details': 'User verified successfully!' })
             }
