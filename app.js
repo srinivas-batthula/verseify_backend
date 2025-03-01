@@ -7,6 +7,8 @@ const helmet = require('helmet')
 const path = require("path")
 const MainRouter = require('./routes/MainRouter')
 const errorHandler = require('./utils/errorHandler')
+const swaggerUi = require("swagger-ui-express")
+const swaggerDocument = require("./swagger.json")
 
 
 
@@ -49,6 +51,9 @@ app.use(passport.initialize())      //Initialize OAuth2.0
 app.get('/', (req, res) => {
     return res.json({ 'status': 'success', 'details': `You are Viewing a Non-API Route (${req.url}), Use '/api/' for all other endpoints to access them` })
 })
+
+// Serve Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 // API Starter...
 app.use('/api', MainRouter)

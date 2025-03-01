@@ -4,7 +4,6 @@ const DataBaseRouter = require('./DataBaseRouter')
 const AuthRouter = require('./AuthRouter')
 const PaymentRouter = require('./PaymentRouter')
 const SearchController = require('../controllers/SearchController')
-const NotifyController = require('../controllers/NotifyController')
 
 
 router.use('/db', DataBaseRouter)

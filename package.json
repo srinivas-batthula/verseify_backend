@@ -31,6 +31,8 @@
     "pug": "^3.0.3",
     "razorpay": "^2.9.6",
     "redis": "^4.7.0",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1",
     "web-push": "^3.6.7"
   }
 }
