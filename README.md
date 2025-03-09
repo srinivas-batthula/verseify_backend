@@ -19,6 +19,7 @@ This is the backend for the Blogging Website ~Verseify, built with **NextJs** an
 - 📄 See **API docs** for all details about ~Verseify
 
 ## 🛠️ Tech Stack
+- **Frontend**: React, NextJs
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB 
 - **Authentication**: JWT & OAuth2.0  (Token based)
