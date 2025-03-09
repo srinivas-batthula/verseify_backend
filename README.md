@@ -3,13 +3,13 @@
 This is the backend for the Blogging Website ~Verseify, built with **NextJs** and **MERN stack**.
 
 ## 🚀 Live Demo  
-🔗 [Live Website](https://frontend)
-🔗 [Live API](https://backend)
+🔗 [Live Website](https://verseify.netlify.app)
+🔗 [Live API](https://verseify-backend.onrender.com)
 
 ## 🔗 Project Links
-- 📄 **Swagger API Docs**: [API Docs Link](https://backend/api-docs)
-- 🖥️ **Frontend Repo**: [Frontend GitHub Link](https://github.com/yourusername/blog-frontend)
-- ⚙️ **Backend Repo**: [Backend GitHub Link](https://github.com/yourusername/blog-backend)
+- 📄 **Swagger API Docs**: [API Docs Link](https://verseify-backend.onrender.com/api-docs)
+- 🖥️ **Frontend Repo**: [Frontend GitHub Link](https://github.com/srinivas-batthula/verseify)
+- ⚙️ **Backend Repo**: [Backend GitHub Link](https://github.com/srinivas-batthula/verseify_backend)
 
 ## 📌 Features
 - 📝 Create, Read, Update, Delete (CRUD) blog posts  
