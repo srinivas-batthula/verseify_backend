@@ -9,22 +9,25 @@ const {Authorization_Middleware} = require('../controllers/AuthController')
 
 const uploads = multer({ storage: multer.memoryStorage() })
 
-router.route('/users')                                      //Users...
-    .get(asyncHandler(UserController.getAll));
+router.route('/user')                                      //Users...
+    .get(Authorization_Middleware, asyncHandler(UserController.getUser));
 
 router.route('/users/:id')
     .get(asyncHandler(UserController.get))
     .patch(Authorization_Middleware, uploads.single('file'), asyncHandler(UserController.update))
     .delete(Authorization_Middleware, asyncHandler(UserController.remove));
 
+                                                        //dashboard...
+router.get('/dashboard', Authorization_Middleware, asyncHandler(UserController.dashboard));
+
 
 router.route('/follow/:id')                                 //Follow / UnFollow
-    .get(Authorization_Middleware, asyncHandler(UserController.follow))
+    .get(asyncHandler(UserController.follow))
     .patch(Authorization_Middleware, asyncHandler(UserController.followUpdate));
 
 
 router.route('/blogs/user/:userId')                         // My Blogs...
-    .get(Authorization_Middleware, asyncHandler(BlogController.myBlogs));
+    .get(asyncHandler(BlogController.myBlogs));
 
 
 router.route('/blogs')                                      //Blogs...

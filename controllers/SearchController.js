@@ -26,11 +26,11 @@ const search = async (req, res) => {
                     },
                 },
                 {
-                    $project: { _id: 1, title: 1, tags: 1 },
+                    $project: { _id: 1, title: 1, media: 1 },
                 },
             ])
 
-            return res.status(200).json({ success: true, details: "Blog Search successful!", blogs })
+            return res.status(200).json({ success: true, details: "Blog Search successful!", results: blogs })
         }
         catch(error) {
             return res.status(500).json({ success: false, details: "Error searching blogs!", error })
@@ -44,9 +44,9 @@ const search = async (req, res) => {
                     { username: { $regex: q, $options: "i" } },
                     { bio: { $regex: q, $options: "i" } },
                 ],
-            }).select("_id username bio")
+            }).select("_id username profile_pic")
 
-            return res.status(200).json({ success: true, details: "User Search successful!", users })
+            return res.status(200).json({ success: true, details: "User Search successful!", results: users })
         }
         catch(error) {
             return res.status(500).json({ success: false, details: "Error searching users!", error })

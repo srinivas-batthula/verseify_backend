@@ -106,7 +106,7 @@ router.get(
         failureRedirect: "/api/auth/google/failure",
     }),
     async (req, res) => {
-        console.log("success");
+        // console.log("success")
         try {
             //Token Generation...
             let token_body = {
@@ -115,32 +115,31 @@ router.get(
             };
             const token = await jwt.sign(token_body, JWT_SECRET, { expiresIn: "7d" });
             if (!token) {
-                return res
-                    .status(501)
-                    .json({ status: "failed", details: "Token Creation Failed!" });
+                // res.status(501).json({ status: "failed", details: "Token Creation Failed!" });
+                return res.status(501).redirect(process.env.HOME+'/login')
             }
             res.cookie("jwt", token, {
                 path: "/api",
                 httpOnly: true,
-                secure: MODE === "production" || true,
-                sameSite: "None",
+                secure: (MODE === 'production'),
+                sameSite: (MODE === 'production') ? 'None' : 'Lax',
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             });
-            return res.status(201).json({'status':'success', 'details':'User Logged-In successfully!'})
-            // return res.status(201).redirect("home_url" + ""); //Redirecting User to Home-Page...
+            // res.status(201).json({success: true, 'status':'success', 'details':'User Logged-In successfully!'})
+            return res.status(201).redirect(process.env.HOME+'/') //Redirecting User to Home-Page...
         } catch (error) {
-            console.log(error);
-            return res
-                .status(500)
-                .json({ status: "failed", details: "Token Creation Failed!" });
+            // console.log(error)
+            // res.status(500).json({ status: "failed", details: "Token Creation Failed!" })
+            return res.status(500).redirect(process.env.HOME+'/login')
         }
     }
 );
 
 router.get("/google/failure", (req, res) => {
-    console.log("failed");
+    // console.log("failed")
     // res.status(403).redirect("home_url" + "/login"); //Return to Login-Page...
-    res.json({'status':'Un-Authorized', 'details':'Please SignIn to continue...', user})
+    // res.status(500).json({success: false, 'status': 'Un-Authorized', 'details': 'Please SignIn to continue...'})
+    return res.status(500).redirect(process.env.HOME+'/login')
 });
 
 

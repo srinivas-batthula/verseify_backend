@@ -23,10 +23,10 @@ app.use(express.json())
 
 app.use(cookieParser())
 
-app.use(express.static('public'));
+app.use(express.static('public'))
 
 const corsOptions = {
-    origin: ['https://srinivas-batthula.github.io', 'http://localhost:3000'], // Allow frontend domain
+    origin: ['https://verseify.netlify.app', 'https://srinivas-batthula.github.io', 'http://localhost:3000'], // Allow frontend domain
     credentials: true,               // Allow credentials (cookies)
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -38,7 +38,7 @@ app.options('/', cors(corsOptions))
 
 const limiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 2 minutes
-    max: 26, // limit each IP to 26 requests per windowMs
+    max: 22, // limit each IP to 26 requests per windowMs
     message: 'Too many requests from this IP, please try again after 2 minutes',
     headers: true,
 })

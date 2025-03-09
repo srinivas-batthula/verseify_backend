@@ -12,6 +12,7 @@ const MODE = process.env.MODE + ''
 
 const Authorization_Middleware = async (req, res, next) => {
     const token = req.cookies.jwt || req.headers.Authorization || ''
+    // console.log(req.cookies.jwt+'    '+req.headers.Authorization)
     
     if (token === '') {               //Checking Token availability...
         return res.status(401).json({ 'success': false, 'Auth': false, 'details': "Cookies/Token Not Found!" })
@@ -239,7 +240,7 @@ const signUp = async (req, res) => {
                 //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
                 // }
 
-                res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production') || true, sameSite: 'None', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+                res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
                 return res.status(201).json({ 'success': true, 'details': 'New User created successfully!' })
             }
             catch(err){
@@ -295,8 +296,8 @@ const signIn = async (req, res) => {
                 //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
                 // }
 
-                res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production') || true, sameSite: 'None', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
-                return res.status(201).json({ 'success': true, 'details': 'User verified successfully!' })
+                res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+                return res.status(201).json({ 'success': true, 'details': 'User verified successfully!', token })
             }
             catch(err){
                 return res.status(201).json({ 'success': true, 'details': 'User verified successfully!', token })
@@ -315,7 +316,7 @@ const signIn = async (req, res) => {
 
 const signOut = async (req, res) => {
     try {                            //Clearing JWT token (cookie)...
-        res.clearCookie('jwt', { path: '/api', secure: (MODE === 'production') || true, sameSite: 'None', httpOnly: true })
+        res.clearCookie('jwt', { path: '/api', secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', httpOnly: true })
         return res.status(200).json({ 'success': true, 'details': "Cookie Cleared, Login again." })
     }
     catch (err) {

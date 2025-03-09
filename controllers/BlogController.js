@@ -8,9 +8,9 @@ const customError = require('../utils/customError')
 
 const getAll = async (req, res) => {
 
-    // Pagination parameters (defaults: page '1', limit '6')
+    // Pagination parameters (defaults: page '1', limit '4')
     const page = parseInt(req.query.page) || 1
-    const limit = 6
+    const limit = 4
     const skip = (page - 1) * limit
 
     try {
@@ -18,9 +18,10 @@ const getAll = async (req, res) => {
             // 1️⃣ Project only the required 'BLOG' fields
             {
                 $project: {
+                    _id: 1,
                     author: 1,
                     title: 1,
-                    content: 1,
+                    // content: 1,
                     tags: 1,
                     likes: 1,
                     media: 1,
@@ -44,9 +45,9 @@ const getAll = async (req, res) => {
             // 4️⃣ Final projection with author details...
             {
                 $project: {
+                    _id: 1,
                     author: 1,
                     title: 1,
-                    content: 1,
                     tags: 1,
                     likes: 1,
                     media: 1,
@@ -68,11 +69,13 @@ const getAll = async (req, res) => {
         // 7️⃣ Total blogs count for pagination info
         const totalCount = await blogModal.countDocuments()
 
+        // console.log('success blogs')
+
         res.status(200).json({
             success: true,
             totalBlogs: totalCount,
             totalPages: Math.ceil(totalCount / limit),
-            currentPage: page,
+            page,
             blogs
         })
     }
@@ -94,14 +97,16 @@ const regexPdf = /\.pdf$/i
 
 const create = async (req, res) => {
     const userId = req.params.userId
-    const body = req.body
-    const check = req.query.q || false           //For 'File-Upload' check = true and otherwise it is false...
+    const body = JSON.parse(req.body.data)
+    const check = req.query.q || 'false'           //For 'File-Upload' check = true and otherwise it is false...
+
     let media = {
         secure_url: '',
         public_id: ''
     }
+    // console.log('userId: '+userId+'  body: '+body+'  check: '+check)
 
-    if (check) {
+    if (check==='true'){
         // Extract file extension
         const fileExtension = req.file.originalname.split('.').pop().toLowerCase()
 
@@ -131,16 +136,19 @@ const create = async (req, res) => {
                     if (error) {
                         return res.status(503).json({ success: false, error: error.message, message: "Failed to upload file!" })
                     }
-                    // console.log(result)
-                    try {
-                        media.secure_url = result.secure_url
-                        media.public_id = result.public_id
+                    // console.log(result.secure_url)
 
-                        // return res.json({ success: true,  message: 'File Uploaded Successfully!', filePath: t.secure_url, public_id: t.public_id});
+                    media.secure_url = result.secure_url
+                    media.public_id = result.public_id
+
+                    body.media = media
+                    body.author = userId
+
+                    const r = await blogModal.create(body)
+                    if(!r) {
+                        throw new customError(500, { 'success': false, 'details': 'Unable to Create Blog!' })
                     }
-                    catch (err) {
-                        return res.status(500).json({ success: false, error: error.message, message: "File Upload Failed!" })
-                    }
+                    return res.status(200).json({ 'success': true, 'details': 'Successfully Created Blog!', 'blog': r })
                 }
             ).end(req.file.buffer)
         }
@@ -148,14 +156,15 @@ const create = async (req, res) => {
             return res.status(500).json({ success: false, error: err, message: "Something went Wrong!" })
         }
     }
-
-    body.media = media
-    body.author = userId
-    const r = await blogModal.create(body)
-    if(!r) {
-        throw new customError(500, { 'success': false, 'details': 'Unable to Create Blog!' })
+    else{
+        // body.media = media
+        body.author = userId
+        const r = await blogModal.create(body)
+        if(!r) {
+            throw new customError(500, { 'success': false, 'details': 'Unable to Create Blog!' })
+        }
+        return res.status(200).json({ 'success': true, 'details': 'Successfully Created Blog!', 'blog': r })
     }
-    return res.status(200).json({ 'success': true, 'details': 'Successfully Created Blog!', 'blog': r })
 }
 
 
@@ -177,6 +186,7 @@ const get = async (req, res) => {
             // 2️⃣ Project only the required blog fields
             {
                 $project: {
+                    _id: 1,
                     author: 1,
                     title: 1,
                     content: 1,
@@ -203,6 +213,7 @@ const get = async (req, res) => {
             // 5️⃣ Final projection with blog & author details
             {
                 $project: {
+                    _id: 1,
                     author: 1,
                     title: 1,
                     content: 1,
@@ -212,8 +223,8 @@ const get = async (req, res) => {
                     createdAt: 1,
                     authorName: '$authorInfo.username',
                     authorBio: '$authorInfo.bio',
-                    authorPic: '$authorInfo.profile_pic.secure_url',
-                    authorSocials: '$authorInfo.social_links',
+                    authorPic: '$authorInfo.profile_pic',
+                    // authorSocials: '$authorInfo.social_links',
                 }
             }
         ])
@@ -237,16 +248,17 @@ const get = async (req, res) => {
 const update = async (req, res) => {
     const id = req.params.id
     const body = req.body
-    const {q} = req.query
+    const q = req.query.q || 'like'
 
     if(q==='like'){
         try{
             const r = await blogModal.findById(id)
-            const bodyIdObject = new mongoose.Types.ObjectId(body.id) // Convert `body.id` to ObjectId
-            if(!r.likes.includes(bodyIdObject)){
-                r.likes.push(bodyIdObject)
+            // const bodyIdObject = new mongoose.Types.ObjectId(body.id) // Convert `body.id` to ObjectId
+            if(!r.likes.includes(body.id)){
+                r.likes.push(body.id)
                 await r.save()
             }
+            // console.log('like')
             return res.status(200).json({'success': true, 'details': 'Successfully Liked Blog!', 'blog': r})
         }
         catch(err){
@@ -260,11 +272,37 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
     const id = req.params.id
 
-    const r = await userModel.findByIdAndDelete(id)
-    if (!r) {
-        throw new customError(500, { 'success': false, 'details': 'Unable to delete Blog!' })
+    // Find the blog first to check if it has media
+    const blog = await blogModal.findById(id)
+    if (!blog) {
+        return res.status(404).json({ success: false, details: "Blog not found!" })
     }
-    return res.status(200).json({ 'success': true, 'details': 'Successfully Deleted Blog!', 'blog': r })
+
+    try {
+        // If media exists, delete it from Cloudinary
+        if (blog.media && blog.media.public_id) {
+            await cloudinary.uploader.destroy(blog.media.public_id, (error, result) => {
+                if (error) {
+                    throw new customError(500, { success: false, details: "Unable to delete Blog media!", error })
+                    // console.error("Error deleting media from Cloudinary:", error)
+                }
+                // else {
+                //     console.log("Media deleted from Cloudinary:", result)
+                // }
+            })
+        }
+
+        // Now delete the blog from the database
+        const r = await blogModal.findByIdAndDelete(id)
+        if (!r) {
+            throw new customError(500, { success: false, details: "Unable to delete Blog!" })
+        }
+
+        return res.status(200).json({ success: true, details: "Successfully Deleted Blog!", blog: r })
+    }
+    catch(err) {
+        return res.status(500).json({ success: false, error: err.message, details: "Something went wrong while deleting!" })
+    }
 }
 
 
@@ -283,11 +321,11 @@ const myBlogs = async (req, res) => {
                 $project: {
                     _id: 1,
                     title: 1,
-                    content: 1,
+                    // content: 1,
                     tags: 1,
                     likes: 1,
                     media: 1,
-                    createdAt: 1
+                    createdAt: 1,
                 }
             },
 
