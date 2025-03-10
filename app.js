@@ -35,7 +35,7 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 
-app.options(cors(corsOptions))
+app.options('/', cors(corsOptions))
 
 const limiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 2 minutes
