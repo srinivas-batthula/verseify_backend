@@ -349,7 +349,7 @@ const myBlogs = async (req, res) => {
                     author: 1,
                     title: 1,
                     tags: 1,
-                    likes: 1,
+                    likes: 1, 
                     media: 1,
                     createdAt: 1,
                     authorName: '$authorInfo.username',
