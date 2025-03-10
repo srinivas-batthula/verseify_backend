@@ -118,15 +118,15 @@ router.get(
                 // res.status(501).json({ status: "failed", details: "Token Creation Failed!" });
                 return res.status(501).redirect(process.env.HOME+'/login')
             }
-            res.cookie("jwt", token, {
-                path: "/",
-                httpOnly: true,
-                secure: true,
-                sameSite: 'Strict',
-                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            });
-            // res.status(201).json({success: true, 'status':'success', 'details':'User Logged-In successfully!'})
-            return res.status(201).redirect(process.env.HOME+'/') //Redirecting User to Home-Page...
+            // res.cookie("jwt", token, {
+            //     path: "/",
+            //     httpOnly: true,
+            //     secure: true,
+            //     sameSite: 'Strict',
+            //     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            // })
+            res.status(201).json({ success: true, 'status':'success', 'details':'User Logged-In successfully!', token })
+            // return res.status(201).redirect(process.env.HOME+'/') //Redirecting User to Home-Page...
         } catch (error) {
             // console.log(error)
             // res.status(500).json({ status: "failed", details: "Token Creation Failed!" })
