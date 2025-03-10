@@ -241,7 +241,7 @@ const signUp = async (req, res) => {
             // if(resp2.success === false) { 
             //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
             // }
-            res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+            res.cookie('jwt', token, { path: '/', httpOnly: true,  secure: true, sameSite: 'None', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
             return res.status(201).json({ 'success': true, 'details': 'New User created successfully!', token })
         }
         catch (error) {
@@ -291,7 +291,7 @@ const signIn = async (req, res) => {
             // if(resp2.success === false) { 
             //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
             // }
-            res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+            res.cookie('jwt', token, { path: '/', httpOnly: true, secure: true, sameSite: 'None', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
             return res.status(201).json({ 'success': true, 'details': 'User verified successfully!', token })
         }
         catch (error) {
@@ -307,7 +307,7 @@ const signIn = async (req, res) => {
 
 const signOut = async (req, res) => {
     try {                            //Clearing JWT token (cookie)...
-        res.clearCookie('jwt', { path: '/api', secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', httpOnly: true })
+        res.clearCookie('jwt', { path: '/',  secure: true, sameSite: 'None', httpOnly: true })
         return res.status(200).json({ 'success': true, 'details': "Cookie Cleared, Login again." })
     }
     catch (err) {

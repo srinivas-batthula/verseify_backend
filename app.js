@@ -30,6 +30,7 @@ const corsOptions = {
     credentials: true,               // Allow credentials (cookies)
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Set-Cookie'], // ✅ Ensure cookies are sent in responses
     maxAge: 600,
 }
 app.use('/', cors(corsOptions))
