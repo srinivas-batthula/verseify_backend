@@ -12,10 +12,7 @@ const MODE = process.env.MODE + ''
 
 const Authorization_Middleware = async (req, res, next) => {
     let token = req.cookies.jwt || ''
-    if(token===''){
-        token = req.headers.Authorization || ''
-    }
-    console.log(req.cookies.jwt+'    '+req.headers.Authorization)
+    // console.log(req.cookies.jwt+'    '+req.headers.Authorization)
     
     if (token === '') {               //Checking Token availability...
         return res.status(401).json({ 'success': false, 'Auth': false, 'details': "Cookies/Token Not Found!" })
@@ -242,7 +239,7 @@ const signUp = async (req, res) => {
             //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
             // }
             res.cookie('jwt', token, { path: '/', httpOnly: true,  secure: true, sameSite: 'Strict', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
-            return res.status(201).json({ 'success': true, 'details': 'New User created successfully!', token })
+            return res.status(201).json({ 'success': true, 'details': 'New User created successfully!' })
         }
         catch (error) {
             // console.log(error)
@@ -292,7 +289,7 @@ const signIn = async (req, res) => {
             //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
             // }
             res.cookie('jwt', token, { path: '/', httpOnly: true, secure: true, sameSite: 'Strict', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
-            return res.status(201).json({ 'success': true, 'details': 'User verified successfully!', token })
+            return res.status(201).json({ 'success': true, 'details': 'User verified successfully!' })
         }
         catch (error) {
             // console.log(error)

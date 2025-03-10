@@ -62,7 +62,7 @@ passport.use(
             clientSecret: process.env.GOOGLE_CLIENT_2 + "",
             callbackURL:
                 process.env.MODE === "production"
-                    ? "__hosted_url__/api/auth/google/callback"
+                    ? "https://verseify-backend.onrender.com/api/auth/google/callback"
                     : "/api/auth/google/callback",
         },
         async (accessToken, refreshToken, profile, done) => {
@@ -119,10 +119,10 @@ router.get(
                 return res.status(501).redirect(process.env.HOME+'/login')
             }
             res.cookie("jwt", token, {
-                path: "/api",
+                path: "/",
                 httpOnly: true,
-                secure: (MODE === 'production'),
-                sameSite: (MODE === 'production') ? 'None' : 'Lax',
+                secure: true,
+                sameSite: 'Strict',
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             });
             // res.status(201).json({success: true, 'status':'success', 'details':'User Logged-In successfully!'})

@@ -3,7 +3,7 @@
 This is the backend for the Blogging Website ~Verseify, built with **NextJs** and **MERN stack**.
 
 ## 🚀 Live Demo  
-🔗 [Live Website](https://verseify.netlify.app)
+🔗 [Live Website](https://verseify.onrender.com)
 🔗 [Live API](https://verseify-backend.onrender.com)
 
 ## 🔗 Project Links

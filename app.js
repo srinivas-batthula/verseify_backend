@@ -29,7 +29,7 @@ const corsOptions = {
     origin: ['https://verseify.onrender.com', 'https://verseify.netlify.app', 'https://srinivas-batthula.github.io', 'http://localhost:3000'], // Allow frontend domain
     credentials: true,               // Allow credentials (cookies)
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type'],
     exposedHeaders: ['Set-Cookie'], // ✅ Ensure cookies are sent in responses
     maxAge: 600,
 }
