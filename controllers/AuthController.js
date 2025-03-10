@@ -11,8 +11,8 @@ const MODE = process.env.MODE + ''
 // Using this Authorization_Middleware in protected routes...
 
 const Authorization_Middleware = async (req, res, next) => {
-    let token = req.cookies.jwt || ''
-    // console.log(req.cookies.jwt+'    '+req.headers.Authorization)
+    const token = req.cookies.jwt || ''
+    console.log(req.cookies.jwt)
     
     if (token === '') {               //Checking Token availability...
         return res.status(401).json({ 'success': false, 'Auth': false, 'details': "Cookies/Token Not Found!" })
