@@ -319,6 +319,7 @@ const myBlogs = async (req, res) => {
             // 2️⃣ Project the required fields
             {
                 $project: {
+                    author: 1,
                     _id: 1,
                     title: 1,
                     // content: 1,
@@ -326,6 +327,34 @@ const myBlogs = async (req, res) => {
                     likes: 1,
                     media: 1,
                     createdAt: 1,
+                }
+            },
+
+            {
+                $lookup: {
+                    from: 'verseify_users',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'authorInfo'
+                }
+            },
+
+            // 3️⃣ Unwind to flatten the author array
+            { $unwind: '$authorInfo' },
+
+            // 4️⃣ Final projection with author details...
+            {
+                $project: {
+                    _id: 1,
+                    author: 1,
+                    title: 1,
+                    tags: 1,
+                    likes: 1,
+                    media: 1,
+                    createdAt: 1,
+                    authorName: '$authorInfo.username',
+                    authorBio: '$authorInfo.bio',
+                    authorPic: '$authorInfo.profile_pic',
                 }
             },
 
