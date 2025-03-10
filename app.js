@@ -30,11 +30,12 @@ const corsOptions = {
     // credentials: true,               // Allow credentials (cookies)
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization'],
     maxAge: 600,
 }
-app.use('/', cors(corsOptions))
+app.use(cors(corsOptions))
 
-app.options('/', cors(corsOptions))
+app.options(cors(corsOptions))
 
 const limiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 2 minutes
