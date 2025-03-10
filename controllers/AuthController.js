@@ -14,7 +14,7 @@ const Authorization_Middleware = async (req, res, next) => {
     // const token = req.cookies.jwt || ''
     let token = req.headers.authorization?.split(' ')[1] || ''
     if(token===''){
-        token = req.query.tid || ''
+        token = req.query.tid?.split(' ')[1] || ''
     }
     // console.log(req.headers.authorization)
     
