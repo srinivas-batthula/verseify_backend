@@ -288,7 +288,7 @@ const signIn = async (req, res) => {
             // if(resp2.success === false) { 
             //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
             // }
-            res.cookie('jwt', token, { path: '/', httpOnly: true, secure: true, sameSite: 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+            res.cookie('jwt', token, { path: '/', httpOnly: true, secure: true, sameSite: 'strict', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
             return res.status(201).json({ 'success': true, 'details': 'User verified successfully!' })
         }
         catch (error) {
