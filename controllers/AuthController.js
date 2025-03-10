@@ -11,8 +11,8 @@ const MODE = process.env.MODE + ''
 // Using this Authorization_Middleware in protected routes...
 
 const Authorization_Middleware = async (req, res, next) => {
-    const token = req.cookies.jwt || ''
-    console.log(req.cookies.jwt)
+    const token = req.headers.Authorization || ''
+    console.log(req.headers.Authorization)
     
     if (token === '') {               //Checking Token availability...
         return res.status(401).json({ 'success': false, 'Auth': false, 'details': "Cookies/Token Not Found!" })
@@ -238,8 +238,10 @@ const signUp = async (req, res) => {
             // if(resp2.success === false) { 
             //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
             // }
-            res.cookie('jwt', token, { path: '/', httpOnly: true,  secure: true, sameSite: 'Strict', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
-            return res.status(201).json({ 'success': true, 'details': 'New User created successfully!' })
+
+
+            // res.cookie('jwt', token, { path: '/', httpOnly: true,  secure: true, sameSite: 'None', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+            return res.status(201).json({ 'success': true, 'details': 'New User created successfully!', token })
         }
         catch (error) {
             // console.log(error)
@@ -288,8 +290,10 @@ const signIn = async (req, res) => {
             // if(resp2.success === false) { 
             //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
             // }
-            res.cookie('jwt', token, { path: '/', httpOnly: true, secure: true, sameSite: 'strict', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
-            return res.status(201).json({ 'success': true, 'details': 'User verified successfully!' })
+
+
+            // res.cookie('jwt', token, { path: '/', httpOnly: true, secure: true, sameSite: 'None', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+            return res.status(201).json({ 'success': true, 'details': 'User verified successfully!', token })
         }
         catch (error) {
             // console.log(error)
@@ -304,7 +308,7 @@ const signIn = async (req, res) => {
 
 const signOut = async (req, res) => {
     try {                            //Clearing JWT token (cookie)...
-        res.clearCookie('jwt', { path: '/',  secure: true, sameSite: 'Strict', httpOnly: true })
+        // res.clearCookie('jwt', { path: '/',  secure: true, sameSite: 'None', httpOnly: true })
         return res.status(200).json({ 'success': true, 'details': "Cookie Cleared, Login again." })
     }
     catch (err) {

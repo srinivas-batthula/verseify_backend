@@ -27,9 +27,9 @@ app.use(express.static('public'))
 
 const corsOptions = {
     origin: ['https://verseify.onrender.com', 'https://verseify.netlify.app', 'https://srinivas-batthula.github.io', 'http://localhost:3000'], // Allow frontend domain
-    credentials: true,               // Allow credentials (cookies)
+    // credentials: true,               // Allow credentials (cookies)
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     maxAge: 600,
 }
 app.use('/', cors(corsOptions))
