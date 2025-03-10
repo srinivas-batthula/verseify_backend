@@ -11,8 +11,11 @@ const MODE = process.env.MODE + ''
 // Using this Authorization_Middleware in protected routes...
 
 const Authorization_Middleware = async (req, res, next) => {
-    const token = req.cookies.jwt || req.headers.Authorization || ''
-    // console.log(req.cookies.jwt+'    '+req.headers.Authorization)
+    let token = req.cookies.jwt || ''
+    if(token===''){
+        token = req.headers.Authorization
+    }
+    console.log(req.cookies.jwt+'    '+req.headers.Authorization)
     
     if (token === '') {               //Checking Token availability...
         return res.status(401).json({ 'success': false, 'Auth': false, 'details': "Cookies/Token Not Found!" })
@@ -233,19 +236,13 @@ const signUp = async (req, res) => {
             })
             if (!token) {
                 return res.status(501).json({ 'success': false, 'details': 'Token Creation Failed!' })
-            }
-            try{                                                   //final...
-                // const resp2 = await redisPost(token_body.user_id, token_body.validFor)
-                // if(resp2.success === false) { 
-                //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
-                // }
-
-                res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
-                return res.status(201).json({ 'success': true, 'details': 'New User created successfully!' })
-            }
-            catch(err){
-                return res.status(201).json({ 'success': true, 'details': 'New User created successfully!', token })
-            }
+            }                                                                                           //final...
+            // const resp2 = await redisPost(token_body.user_id, token_body.validFor)
+            // if(resp2.success === false) { 
+            //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
+            // }
+            res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+            return res.status(201).json({ 'success': true, 'details': 'New User created successfully!', token })
         }
         catch (error) {
             // console.log(error)
@@ -289,19 +286,13 @@ const signIn = async (req, res) => {
             })
             if (!token) {
                 return res.status(501).json({ 'success': false, 'details': 'Token Creation Failed!' })
-            }
-            try{                                            //final...
-                // const resp2 = await redisPost(token_body.user_id, token_body.validFor)
-                // if(resp2.success === false) { 
-                //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
-                // }
-
-                res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
-                return res.status(201).json({ 'success': true, 'details': 'User verified successfully!', token })
-            }
-            catch(err){
-                return res.status(201).json({ 'success': true, 'details': 'User verified successfully!', token })
-            }
+            }                                  //final...
+            // const resp2 = await redisPost(token_body.user_id, token_body.validFor)
+            // if(resp2.success === false) { 
+            //     return res.status(500).json({'success': false, 'details': 'An error encountered in REDIS DB!'})
+            // }
+            res.cookie('jwt', token, { path: '/api', httpOnly: true, secure: (MODE === 'production'), sameSite: (MODE === 'production') ? 'None' : 'Lax', expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) })
+            return res.status(201).json({ 'success': true, 'details': 'User verified successfully!', token })
         }
         catch (error) {
             // console.log(error)
