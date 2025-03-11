@@ -94,6 +94,8 @@ const update = async (req, res) => {
     else{
         try {
             const r = await userModel.findByIdAndUpdate(id, body, { new: true }).lean()
+            console.log(body)
+            // console.log(r)
             if (!r) {
                 throw new customError(500, { 'success': false, 'details': 'Unable to update User!' })
             }
