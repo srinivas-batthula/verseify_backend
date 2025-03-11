@@ -19,6 +19,7 @@ const pushNotify = async (body) => {
     }
 
     const notificationPayload = JSON.stringify({
+        id: body.id,
         title: body.title,
         body: body.body,
         icon: body.icon || '/path/to/default/icon.png',

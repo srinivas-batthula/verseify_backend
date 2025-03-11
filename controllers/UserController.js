@@ -142,7 +142,7 @@ const followUpdate = async (req, res) => {
             const r2 = await userModel.findById(body.id).select('subscription username')
             if(r && r.subscription){
                 await pushNotify({id: id, subscription: r.subscription, title: 'New Follow Alert!', body: "You've followed a new User..."})
-                console.log('notify...')
+                // console.log('notify...')
             }
             if(r2 && r2.subscription){
                 await pushNotify({id: body.id, subscription: r2.subscription, title: 'New Follow Alert!', body: "A New User has started following you..."})
