@@ -153,7 +153,7 @@ const create = async (req, res) => {
                                             // Sending Notification to users...
                     const r2 = await userModel.findById(userId).select('subscription username')
                     if (r2 && r2.subscription) {
-                        await pushNotify({ id: userId, subscription: r2.subscription, title: 'New Post Alert!', body: `Congrats ${r2.username}, Your new Blog has been posted into public...` })
+                        await pushNotify({ id: r._id, subscription: r2.subscription, title: 'New Post Alert!', body: `Congrats ${r2.username}, Your new Blog has been posted into public...` })
                         // console.log('notify...')
                     }
 
