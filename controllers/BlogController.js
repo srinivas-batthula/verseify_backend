@@ -1,8 +1,9 @@
 const cloudinary = require("../cloudinaryConfig")
 const blogModal = require('../models/Blog')
+const userModel = require('../models/User')
 const mongoose = require("mongoose")
 const customError = require('../utils/customError')
-
+const {pushNotify} = require('../services/notify')
 
 
 
@@ -106,7 +107,7 @@ const create = async (req, res) => {
     }
     // console.log('userId: '+userId+'  body: '+body+'  check: '+check)
 
-    if (check==='true'){
+    if (check === 'true') {
         // Extract file extension
         const fileExtension = req.file.originalname.split('.').pop().toLowerCase()
 
@@ -145,9 +146,17 @@ const create = async (req, res) => {
                     body.author = userId
 
                     const r = await blogModal.create(body)
-                    if(!r) {
+                    if (!r) {
                         throw new customError(500, { 'success': false, 'details': 'Unable to Create Blog!' })
                     }
+
+                                            // Sending Notification to users...
+                    const r2 = await userModel.findById(userId).select('subscription username')
+                    if (r2 && r2.subscription) {
+                        await pushNotify({ id: userId, subscription: r2.subscription, title: 'New Post Alert!', body: `Congrats ${r2.username}, Your new Blog has been posted into public...` })
+                        // console.log('notify...')
+                    }
+
                     return res.status(200).json({ 'success': true, 'details': 'Successfully Created Blog!', 'blog': r })
                 }
             ).end(req.file.buffer)
@@ -156,11 +165,11 @@ const create = async (req, res) => {
             return res.status(500).json({ success: false, error: err, message: "Something went Wrong!" })
         }
     }
-    else{
+    else {
         // body.media = media
         body.author = userId
         const r = await blogModal.create(body)
-        if(!r) {
+        if (!r) {
             throw new customError(500, { 'success': false, 'details': 'Unable to Create Blog!' })
         }
         return res.status(200).json({ 'success': true, 'details': 'Successfully Created Blog!', 'blog': r })
@@ -250,18 +259,24 @@ const update = async (req, res) => {
     const body = req.body
     const q = req.query.q || 'like'
 
-    if(q==='like'){
-        try{
+    if (q === 'like') {
+        try {
             const r = await blogModal.findById(id)
             // const bodyIdObject = new mongoose.Types.ObjectId(body.id) // Convert `body.id` to ObjectId
-            if(!r.likes.includes(body.id)){
+            if (!r.likes.includes(body.id)) {
                 r.likes.push(body.id)
                 await r.save()
             }
+            // Sending Notification to author...
+            const r2 = await userModel.findById(r.author).select('subscription _id')
+            if (r2 && r2.subscription) {
+                await pushNotify({ id: r2._id, subscription: r2.subscription, title: 'New Like Alert!', body: `A New User has Liked your blog...` })
+            }
+
             // console.log('like')
-            return res.status(200).json({'success': true, 'details': 'Successfully Liked Blog!', 'blog': r})
+            return res.status(200).json({ 'success': true, 'details': 'Successfully Liked Blog!', 'blog': r })
         }
-        catch(err){
+        catch (err) {
             throw new customError(500, { 'success': false, 'details': 'Unable to Like a Blog!' })
         }
     }
@@ -300,7 +315,7 @@ const remove = async (req, res) => {
 
         return res.status(200).json({ success: true, details: "Successfully Deleted Blog!", blog: r })
     }
-    catch(err) {
+    catch (err) {
         return res.status(500).json({ success: false, error: err.message, details: "Something went wrong while deleting!" })
     }
 }
@@ -349,7 +364,7 @@ const myBlogs = async (req, res) => {
                     author: 1,
                     title: 1,
                     tags: 1,
-                    likes: 1, 
+                    likes: 1,
                     media: 1,
                     createdAt: 1,
                     authorName: '$authorInfo.username',

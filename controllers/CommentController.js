@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const CommentModal = require('../models/Comment')
+const userModel = require('../models/User')
 const customError = require('../utils/customError')
+const {pushNotify} = require('../services/notify')
 
 
 
@@ -98,6 +100,13 @@ const create = async (req, res) => {
         if (!r) {
             throw new customError(503, { 'success': false, 'details': 'Unable to Create Comment!' })
         }
+                                    // Sending Notification to users...
+        const r2 = await userModel.findById(body.userId).select('subscription username')
+        if (r2 && r2.subscription) {
+            await pushNotify({ id: body.userId, subscription: r2.subscription, title: 'New Comment Alert!', body: `Congrats, You've Commented on a blog...` })
+            // console.log('notify...')
+        }
+
         return res.status(200).json({ 'success': true, 'details': 'Successfully Created Comment!', 'comment': r })
     }
     catch (err) {
