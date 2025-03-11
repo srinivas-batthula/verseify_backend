@@ -14,7 +14,7 @@ webPush.setVapidDetails('mailto:srinivasb.temp@gmail.com', publicVapidKey, priva
 
 
 const pushNotify = async (body) => {
-    if(body.subscription==='' || body.title==='' || body.body===''){
+    if(body.subscription==='' || body.title==='' || body.body==='' || body.id===''){
         return {success: false, 'details':'Invalid Details!'}
     }
 
