@@ -4,7 +4,8 @@ const CommentModal = require('../models/Comment')
 const cloudinary = require("../cloudinaryConfig")
 const mongoose = require("mongoose")
 const customError = require('../utils/customError')
-const CustomError = require('../utils/customError')
+const {pushNotify} = require('../services/notify')
+
 
 
 const getUser = async (req, res) => {
@@ -134,6 +135,16 @@ const followUpdate = async (req, res) => {
                 await r.save()
             }
             // console.log('follow')
+
+                            // Sending Notification to users...
+            const r2 = await userModel.findById(body.id).select('subscription username')
+            if(r && r.subscription){
+                await pushNotify({subscription: r.subscription, title: 'New Follow Alert!', body: "You've followed a new User..."})
+            }
+            if(r2 && r2.subscription){
+                await pushNotify({subscription: r2.subscription, title: 'New Follow Alert!', body: "A New User has started following you..."})
+            }
+
             return res.status(200).json({ 'success': true, 'details': 'Follow Update Successful!', 'user':r })
         }
         catch(err){
