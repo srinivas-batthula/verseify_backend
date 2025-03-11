@@ -103,7 +103,7 @@ const create = async (req, res) => {
                                     // Sending Notification to users...
         const r2 = await userModel.findById(body.userId).select('subscription username')
         if (r2 && r2.subscription) {
-            await pushNotify({ id: body.userId, subscription: r2.subscription, title: 'New Comment Alert!', body: `Congrats, You've Commented on a blog...` })
+            await pushNotify({ id: r._id, subscription: r2.subscription, title: 'New Comment Alert!', body: `Congrats, You've Commented on a blog...` })
             // console.log('notify...')
         }
 
