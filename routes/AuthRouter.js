@@ -125,8 +125,8 @@ router.get(
             //     sameSite: 'Strict',
             //     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             // })
-            res.status(201).json({ success: true, 'status':'success', 'details':'User Logged-In successfully!', token })
-            // return res.status(201).redirect(process.env.HOME+'/') //Redirecting User to Home-Page...
+            return res.status(201).redirect(process.env.HOME+`/login?token=${token}&g=true`) //Redirecting User to Home-Page...
+            // return res.status(201).json({ success: true, 'status':'success', 'details':'User Logged-In successfully!', token })
         } catch (error) {
             // console.log(error)
             // res.status(500).json({ status: "failed", details: "Token Creation Failed!" })
