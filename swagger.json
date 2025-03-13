@@ -5,10 +5,10 @@
     "description": "Automatically generated API documentation  ~Verseify",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "verseify-backend.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "paths": {
     "/signUp": {
