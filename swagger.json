@@ -5,7 +5,7 @@
     "description": "Automatically generated API documentation  ~Verseify",
     "version": "1.0.0"
   },
-  "host": "verseify-backend.onrender.com",
+  "host": "verseify-backend.onrender.com/api",
   "basePath": "/",
   "schemes": [
     "https"
