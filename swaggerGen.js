@@ -1,3 +1,4 @@
+require('dotenv').config({path:'./config.env'});
 const swaggerAutogen = require("swagger-autogen")();
 
 
@@ -7,8 +8,8 @@ const doc = {
         description: "Automatically generated API documentation  ~Verseify",
         version: "1.0.0",
     },
-    host: "localhost:5000", // Change this if deploying
-    schemes: ["http"],
+    host: "verseify-backend.onrender.com", // Change this if deploying
+    schemes: ["https"],
 }
 
 const outputFile = "./swagger.json"           // The output file
