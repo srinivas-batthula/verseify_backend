@@ -47,9 +47,6 @@ const Authorization_Middleware = async (req, res, next) => {
             
             req.user = {                //Assigning user's details to req-obj for future use...
                 'userId': user._id,
-                // 'username': user.username,
-                // 'email': user.email,
-                // 'subscription': user.subscription || false
             };
             // console.log("Authorized")       //Passing to next middleware (endPoint).
             next()
@@ -96,7 +93,7 @@ const forgotPasswordEmail = async(req, res, next)=>{
                 <h2>Your Password Reset request has been approved!</h2>
                 <h3>click below link & Follow the instructions to reset your forgotten password.</h3>
                 <br>
-                <a href="http://localhost:8080/api/auth/forgot-password/${token}" styel="width:150px; height:90px; font-size:30px;">Click Here</a>
+                <a href="https://verseify-backend.onrender.com/api/auth/forgot-password/${token}" styel="width:150px; height:90px; font-size:30px;">Click Here</a>
                 <br>
                 <h3>~Thanks  from feedback team.</h3>
                 <h3 style="color: skyblue;">~Verseify</h3>
