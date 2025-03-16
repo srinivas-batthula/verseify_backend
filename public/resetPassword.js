@@ -55,10 +55,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 }).showToast();
 
                 if (check) {
-                    setTimeout(() => window.location.href = "/login", 1800);     //Routed to /login page (frontend)
+                    setTimeout(() => window.location.href = "https://verseify.netlify.app/login", 1800);     //Routed to /login page (frontend)
                 }
                 else {
-                    setTimeout(() => window.location.href = "/", 1800);     //Routed to / page (frontend)
+                    setTimeout(() => window.location.href = "https://verseify.netlify.app/", 1800);     //Routed to / page (frontend)
                 }
                 document.getElementById("check").value = ''
                 document.getElementById("oldPassword") ? document.getElementById("oldPassword").value = '' : null
