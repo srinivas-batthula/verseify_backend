@@ -4,10 +4,10 @@ This is the backend for the Blogging Website ~Verseify, built with **NextJs** an
 
 ## 🚀 Live Demo  
 🔗 [Live Website](https://verseify.netlify.app)
-🔗 [Live API](https://verseify-backend.onrender.com)
+🔗 [Live API](https://verseify-backend-kxtc.onrender.com)
 
 ## 🔗 Project Links
-- 📄 **Swagger API Docs**: [API Docs Link](https://verseify-backend.onrender.com/api-docs)
+- 📄 **Swagger API Docs**: [API Docs Link](https://verseify-backend-kxtc.onrender.com/api-docs)
 - 🖥️ **Frontend Repo**: [Frontend GitHub Link](https://github.com/srinivas-batthula/verseify)
 - ⚙️ **Backend Repo**: [Backend GitHub Link](https://github.com/srinivas-batthula/verseify_backend)
 
