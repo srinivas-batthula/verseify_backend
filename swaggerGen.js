@@ -8,7 +8,7 @@ const doc = {
         description: "Automatically generated API documentation  ~Verseify",
         version: "1.0.0",
     },
-    host: "verseify-backend.onrender.com", // Change this if deploying
+    host: "verseify-backend-kxtc.onrender.com", // Change this if deploying
     schemes: ["https"],
 }
 
