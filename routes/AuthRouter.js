@@ -62,7 +62,7 @@ passport.use(
             clientSecret: process.env.GOOGLE_CLIENT_2 + "",
             callbackURL:
                 process.env.MODE === "production"
-                    ? "https://verseify-backend.onrender.com/api/auth/google/callback"
+                    ? process.env.BACKEND_URL+"/api/auth/google/callback"
                     : "/api/auth/google/callback",
         },
         async (accessToken, refreshToken, profile, done) => {
