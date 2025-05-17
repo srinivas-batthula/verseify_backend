@@ -39,8 +39,8 @@ app.options('*', cors(corsOptions))
 
 const limiter = rateLimit({                                  //Must to be used in production to prevent attacks...
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 5, // limit each IP to 20 requests per windowMs
-    message: 'Too many requests from this IP, please try again after 2 minutes',
+    max: 5, // limit each IP to 5 requests per windowMs
+    message: 'Too many requests from this IP, please try again after 1 minute!',
     headers: true,
 })
 app.use(limiter)
