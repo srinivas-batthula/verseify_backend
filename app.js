@@ -1,3 +1,4 @@
+// app.js
 const express = require('express');
 const passport = require('passport')
 const cookieParser = require('cookie-parser')
@@ -9,7 +10,6 @@ const MainRouter = require('./routes/MainRouter')
 const errorHandler = require('./utils/errorHandler')
 const swaggerUi = require("swagger-ui-express")
 const swaggerDocument = require("./swagger.json")
-
 
 
 const app = express();
@@ -26,7 +26,7 @@ app.use(cookieParser())
 app.use(express.static('public'))
 
 const corsOptions = {
-    origin: ['https://verseify.netlify.app', 'https://srinivas-batthula.github.io', 'http://localhost:3000'], // Allow frontend domain
+    origin: ['https://verseify.netlify.app', 'http://localhost:3000', 'http://localhost:8080'], // Allow frontend domain
     // credentials: true,               // Allow credentials (cookies)
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -39,7 +39,7 @@ app.options('*', cors(corsOptions))
 
 const limiter = rateLimit({                                  //Must to be used in production to prevent attacks...
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 5, // limit each IP to 5 requests per windowMs
+    max: 10, // limit each IP to 10 requests per windowMs
     message: 'Too many requests from this IP, please try again after 1 minute!',
     headers: true,
 })
