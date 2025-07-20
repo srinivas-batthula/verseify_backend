@@ -1,4 +1,4 @@
-name: Build & Push to Docker Hub
+name: Build & Push to Docker Hub & Trigger Re-Deploy
 
 on:
   push:
@@ -29,5 +29,5 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/verseify_backend:latest
       
       # Triggers Auto-ReDeploy on Render via deploy-hook
-      - name: Trigger auto-deploy on Render
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+      # - name: Trigger auto-deploy on Render
+      #   run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
